@@ -22,3 +22,4 @@ def read_item(item_id: int, q: Union[str, None] = None):
 @app.get("/echo/{hoge}")
 def echo(hoge: str):
     return {"content": hoge}
+
