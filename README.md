@@ -22,3 +22,9 @@ make serve
 ```
 3. access `localhost:8888`
 4. you should see raw response of `{"Hello":"World"}`
+
+## Frontend
+```
+cd frontend
+npm run start
+```
