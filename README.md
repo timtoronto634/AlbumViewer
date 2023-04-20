@@ -26,5 +26,6 @@ make serve
 ## Frontend
 ```
 cd frontend
+npm install
 npm run start
 ```
