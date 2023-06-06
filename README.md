@@ -29,3 +29,6 @@ cd frontend
 npm install
 npm run start
 ```
+
+### design
+for design, we use ant-d
