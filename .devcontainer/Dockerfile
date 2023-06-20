@@ -1,23 +1,27 @@
-FROM mcr.microsoft.com/devcontainers/anaconda:0.202.20-3
+FROM ubuntu:22.04
 
-RUN mkdir /memo
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH /opt/conda/bin:$PATH
 
-# Prevent conda command error
-RUN pip install --force-reinstall --user "cryptography==38.0.4" \
+RUN apt-get update \
+    && apt-get install -y wget bzip2 ca-certificates libglib2.0-0 libxext6 \
+            libsm6 libxrender1 git mercurial subversion cmake libgl1-mesa-dev \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /usr/local/src/* /var/lib/apt/lists/*
+
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.3.1-0-Linux-x86_64.sh -O ~/miniconda.sh \
+    && /bin/bash ~/miniconda.sh -b -p /opt/conda \
+    && rm ~/miniconda.sh \
+    && /opt/conda/bin/conda clean -tipy \
+    && ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh \
+    && echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc \
+    && echo "conda activate base" >> ~/.bashrc
+
+RUN conda install -y opencv pillow pydantic -c conda-forge \
+    && conda clean -afy
+
+RUN pip install --no-cache-dir responder typesystem==0.2.5 \
     && rm -rf ~/.cache/pip
 
-# Copy environment.yml (if found) to a temp location so we update the environment. Also
-# copy "noop.txt" so the COPY instruction does not fail if no environment.yml exists.
-COPY .devcontainer/conda_env.txt  /tmp/conda-tmp/
-RUN conda install --file /tmp/conda-tmp/conda_env.txt \
-    && conda clean -afy \
-    && rm /tmp/conda-tmp/conda_env.txt
 
-# [Optional] Uncomment this section to install additional OS packages.
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends git yadm libgl1-mesa-dev
-
-WORKDIR /workspace/
-COPY requirements.txt .
-
-RUN pip install --no-cache-dir -r ./requirements.txt

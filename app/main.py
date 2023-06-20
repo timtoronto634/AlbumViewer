@@ -1,25 +1,32 @@
-from typing import Union
-
-from fastapi import FastAPI
-
-app = FastAPI()
+import cv2
+import responder
 
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+class Application:
+
+    def __init__(self, port=80):
+        self.api = responder.API()
+        self.port = port
+
+        self.api.add_route("/", self.get_page)
+        self.api.add_route("/health", self.health_check)
+        self.api.add_route("/echo/{hoge}", self.echo)
+
+    def start(self):
+        self.api.run(address='0.0.0.0', port=self.port)
+
+    def get_page(self, _, resp):
+        resp.content = "<body>hello, world</body>"
+        resp.mimetype = 'text/html'
+
+    def health_check(self, _, resp):
+        resp.media = {"status": "ok"}
+        resp.mimetype = 'application/json'
+
+    def echo(self, req, resp, *, hoge):
+        resp.media = {"content": hoge}
+        resp.mimetype = 'application/json'
 
 
-@app.get("/health")
-def healthcheck():
-    return {"status": "ok"}
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
-@app.get("/echo/{hoge}")
-def echo(hoge: str):
-    return {"content": hoge}
-
+if __name__ == '__main__':
+    Application().start()
