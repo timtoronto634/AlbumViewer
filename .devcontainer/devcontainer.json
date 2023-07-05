@@ -1,33 +1,38 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/anaconda
 {
-	"name": "container-miniconda",
-	"build": { 
-		"context": "..",
-		"dockerfile": "Dockerfile"
-	},
+    "name": "container-miniconda",
+    "build": { 
+        "context": "..",
+        "dockerfile": "Dockerfile"
+    },
   // "settings": {
   //   "terminal.integrated.shell.linux": "/bin/bash"
   // }
 
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+    // Features to add to the dev container. More info: https://containers.dev/features.
+    // "features": {},
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": ["80"],
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    // "forwardPorts": ["80"],
   "appPort": [ "8888:80" ],
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "python --version",
+    // Use 'postCreateCommand' to run commands after the container is created.
+    // "postCreateCommand": "python --version",
 
-	// Configure tool-specific properties.
+    // Configure tool-specific properties.
   "customizations": {
     // Configure properties specific to VS Code.
     "vscode": {
-      // Add the IDs of extensions you want installed when the container is created.
-      "extensions": ["ms-python.pylint", "ms-python.flake8"]
+        "extensions": ["ms-python.pylint", "ms-python.flake8"],
+        "settings":{
+            "python.pythonPath": "/opt/conda/bin/python",
+            "python.analysis.extraPaths" : [
+                "/opt/conda/lib/python3.10/site-packages/"
+            ]
+        }
     }
   }
 
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+    // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+    // "remoteUser": "root"
 }
