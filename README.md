@@ -32,3 +32,6 @@ npm run start
 
 ### design
 for design, we use ant-d
+
+### schema
+we use OpenAPI Generator. see: https://openapi-generator.tech/
