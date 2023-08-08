@@ -1,0 +1,67 @@
+<meta charset="utf-8"><link rel="icon" href="data:,">
+
+<input type="file" accept="image/*" id="form1"/>
+<button type="button" id="btn1">単一画像アップロード</button>
+<br/>
+<input type="file" accept="image/*" multiple id="formN"/>
+<button type="button" id="btnN">複数画像アップロード</button>
+
+
+<script>window.addEventListener('load',()=>{
+
+    // アップロードすべきもの
+    var to_upload = [];
+
+    // 単一画像入力
+    form1.addEventListener('change',(evt)=>{
+        console.log('1 image inputted');
+        console.log(evt.target.files);
+        to_upload.push(evt.target.files[0]);
+    },false);
+    // 単一画像アップロード
+    btn1.addEventListener('click',()=>{
+        console.log("single file upload");
+        console.log(to_upload);
+
+        const formdata = new FormData();
+        formdata.append('file', to_upload[0]);
+
+        fetch( new Request('/images',{
+            method: 'POST',
+            headers: {},
+            body: formdata,
+        })).then(resp=>{
+            console.dir(resp)
+        });
+    },false);
+    
+
+    // 複数画像入力
+    formN.addEventListener('change',(evt)=>{
+        console.log('multiple image inputted');
+        console.log(evt.target.files);
+        console.log(evt.target.files.length);
+        for(let i=0;i<evt.target.files.length;i++){
+            to_upload.push(evt.target.files[i]);
+        }
+    },false);
+    // 複数画像アップロード
+    btnN.addEventListener('click',(evt)=>{
+        console.log("multiple file upload");
+        console.log(to_upload);
+
+        const formdata = new FormData();
+        for(let i=0;i<to_upload.length;i++){
+            formdata.append('file'+i, to_upload[i]);
+        }
+
+        fetch( new Request('/images',{
+            method: 'POST',
+            headers: {},
+            body: formdata,
+        })).then(resp=>{
+            console.dir(resp)
+        });
+        
+    },false);
+},false);</script>
