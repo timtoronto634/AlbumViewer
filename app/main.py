@@ -3,18 +3,22 @@
 
 from pathlib import Path
 
-# import cv2
 import responder
 
+from utils import Application
 
-class Application:
-    """doc
+
+class ApiServer:
+    """APIクラス
     """
 
     def __init__(self, address='0.0.0.0', port=80):
         self.api = responder.API()
         self.address = address
         self.port = port
+
+        # TODO) サーバーでの画像保存場所をどこにするか、後で決める
+        self.app = Application(self.api, cache_root=Path('var/server_cache'))
 
         self.index_html = Path('app/index.html').read_text(encoding='utf-8')
 
@@ -25,7 +29,7 @@ class Application:
         self.api.add_route("/images", self.post_image)
 
     def start(self):
-        """doc
+        """サーバーを開始する
         """
         self.api.run(address=self.address, port=self.port)
 
@@ -47,33 +51,18 @@ class Application:
         resp.media = {"content": hoge}
         resp.mimetype = 'application/json'
 
-    async def post_image(self, req, _resp):
-        """doc
+    async def post_image(self, req, resp):
+        """画像を受け取って保存
         """
         assert req.method == 'post'
 
         # 画像の受け取り
         data = await req.media(format='files')
-        print(type(data))
-        print(data.keys())
+        resp.status_code = 201
 
-        # サーバーでの画像保存場所 TODO) あとで見直す
-        storage = Path('var/server_cache')
-        storage.mkdir(exist_ok=True, parents=True)
-
-        # 保存
-        def save_image(file):
-            filename = file['filename']
-            content = file['content']
-            ctype = file['content-type']
-            print(ctype)
-            if not ctype.startswith('image/'):
-                return
-            (storage/filename).write_bytes(content)
-
-        for _, file in data.items():
-            save_image(file)
+        # データの保存
+        self.app.save(data)
 
 
 if __name__ == '__main__':
-    Application(address='0.0.0.0', port=80).start()
+    ApiServer(address='0.0.0.0', port=80).start()
