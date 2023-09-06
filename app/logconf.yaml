@@ -1,0 +1,41 @@
+version: 1
+ 
+formatters:
+    rootformat:
+        format: '[DO NOT USE ROOT LOGGER] %(name)s %(levelname)s %(message)s'
+    myformatter:
+        format: '[%(asctime)s.%(msecs)03d] %(name)s - %(levelname)s: %(message)s'
+        datefmt: '%Y/%d/%m %H:%M:%S'
+
+handlers:
+    roothandler:
+        class: logging.StreamHandler
+        level: DEBUG
+        formatter: rootformat
+        stream: ext://sys.stdout
+    file_handler: &base_hdl
+        class: logging.FileHandler
+        level: DEBUG
+        formatter: myformatter
+        filename: var/logs/server_any.log
+    storage_handler:
+        <<: *base_hdl
+        filename: var/logs/server_storage.log
+
+loggers:
+    # 基本設定
+    sample: &base_lgr
+        handlers: [file_handler]
+        level: DEBUG
+        qualname: console
+        propagate: no
+    # 自作モジュールのログ設定
+    usecase.save_images:
+        <<: *base_lgr
+        handlers: [storage_handler]
+    # サードパーティライブラリのログ伝播を止める
+    uvicorn: {propagate: no}
+
+root:
+    level: DEBUG
+    handlers: [roothandler]
